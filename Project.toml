@@ -1,0 +1,19 @@
+name = "GridapStokesDarcyNitsche"
+uuid = "ebf43f2c-4367-49c7-bf89-f64ca964057b"
+authors = ["Ricardo Ruiz-Baier <ricardo.ruizbaier@monash.edu>"]
+version = "1.0.0-DEV"
+
+[deps]
+Gridap = "56d4f2e9-7ea1-5844-9cf6-b9c51ca7ce8e"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
+[compat]
+Gridap = "0.18.10"
+Printf = "1.10.0"
+julia = "1.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
