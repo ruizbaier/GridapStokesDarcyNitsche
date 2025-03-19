@@ -104,16 +104,16 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     
     a22(u,v) = ∫((μ/κ)*(u⋅v))dΩ_D + ∫((δ/h_e_Σ)*(u.⁻⋅n_Σ.⁻)*(v.⁻⋅n_Σ.⁻))dΣ
 
-    b34(ψ,q) = ∫(ψ*q)dΩ_D           
+    b45(ψ,q) = ∫(ψ*q)dΩ_D           
 
     lhs((uS,uD,pS,pD,φ),(vS,vD,qS,qD,ψ)) = 
     #   uS           uD           pS           pD           φ
     # ---------------------------------------------------------------|---
     a11(uS,vS) + a12(vS,uD) + b13(vS,pS) + b14(vS,pD)             + #|vS
-    a12(uS,vD) + a22(uD,vD)              + b24(vD,pD) + b34(φ,qD) + #|vD
+    a12(uS,vD) + a22(uD,vD)              + b24(vD,pD)             + #|vD
     b13(uS,qS)                                                    + #|qS
-    b14(uS,qD) + b24(uD,qD)                                       + #|qD
-                 b34(ψ,pD)                                          #|ψ
+    b14(uS,qD) + b24(uD,qD)                            + b45(φ,qD)+ #|qD
+                                            b45(ψ,pD)               #|ψ
 
     lvS(v) = ∫(v⋅fS)dΩ_S - ∫((-(σS_ex⋅n_Σ.⁺)⋅n_Σ.⁺-pD_ex)*(v.⁺⋅n_Σ.⁺))dΣ - 
              ∫((-(μ*α/sqrt(κ))*(uS_ex×n_Σ.⁺)-(σS_ex⋅n_Σ.⁺)×n_Σ.⁺)*(v.⁺×n_Σ.⁺))dΣ +
