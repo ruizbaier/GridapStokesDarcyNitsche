@@ -96,16 +96,33 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     X = MultiFieldFESpace([Uf,Ur,Us,Pf,Ph,L])
     
 
-    a1(uf,vf)   = ∫((2*μ)*(ε(uf)⊙ε(vf)))dΩ_S + ∫((μ*α/sqrt(κ))*(uf.⁺×n_Σ.⁺)*(vf.⁺×n_Σ.⁺))dΣ + ∫((δ*μ/h_e_Σ)*(uf.⁺⋅n_Σ.⁺)*(vf.⁺⋅n_Σ.⁺))dΣ - ∫((2*μ)*((ε(uf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(vf.⁺⋅n_Σ.⁺))dΣ - ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(uf.⁺⋅n_Σ.⁺))dΣ
+    a1(uf,vf)   = ∫((2*μ)*(ε(uf)⊙ε(vf)))dΩ_S + 
+                  ∫((μ*α/sqrt(κ))*(uf.⁺×n_Σ.⁺)*(vf.⁺×n_Σ.⁺))dΣ + 
+                  ∫((δ*μ/h_e_Σ)*(uf.⁺⋅n_Σ.⁺)*(vf.⁺⋅n_Σ.⁺))dΣ - 
+                  ∫((2*μ)*((ε(uf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(vf.⁺⋅n_Σ.⁺))dΣ - 
+                  ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(uf.⁺⋅n_Σ.⁺))dΣ
     
-    a2(ur,vf)   = ∫((δ*μ/h_e_Σ)*(ur.⁻⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ - ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(ur.⁻⋅n_Σ.⁻))dΣ
+    a2(ur,vf)   = ∫((δ*μ/h_e_Σ)*(ur.⁻⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ -
+                  ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(ur.⁻⋅n_Σ.⁻))dΣ
+                  
     a3(pf,vf)   = ∫(-(∇⋅vf)*pf)dΩ_S + ∫(pf.⁺*(vf.⁺⋅n_Σ.⁺))dΣ 
     a4(uf,qf)   = ∫((∇⋅uf)*qf)dΩ_S - ∫(qf.⁺*(uf.⁺⋅n_Σ.⁺))dΣ 
     a5(ys,ws)   = ∫((2*μP)*(ε(ys)⊙ε(ws)))dΩ_D + ∫(λP*(∇⋅ys)*(∇⋅ws))dΩ_D
     a6(ph,ws)   = ∫(-(∇⋅ws)*ph)dΩ_D 
-    a7(uf,ws)   = ∫(-(μ*α/sqrt(κ))*(uf.⁺×n_Σ.⁺)*(ws.⁻×n_Σ.⁺))dΣ +  ∫((δ*μ/h_e_Σ)*(uf.⁺⋅n_Σ.⁺)*(ws.⁻⋅n_Σ.⁻))dΣ - ∫((2*μ)*((ε(uf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(ws.⁻⋅n_Σ.⁻))dΣ
-    a8(ur,ws)   = ∫((δ*μ/h_e_Σ)*(ur.⁻⋅n_Σ.⁻)*(ws.⁻⋅n_Σ.⁻))dΣ + ∫((2*μ*φ)*(ε(ur)⊙ε(ws)))dΩ_D -∫(θ_sink*(ur⋅ws))dΩ_D 
-    a9(ur,vr)   =  ∫((δ*μ/h_e_Σ)*(ur.⁻⋅n_Σ.⁻)*(vr.⁻⋅n_Σ.⁻))dΣ + ∫((μ*α/sqrt(κ))*(ur.⁻×n_Σ.⁻)*(vr.⁻×n_Σ.⁻))dΣ + ∫((2*μ*φ)*(ε(ur)⊙ ε(vr)))dΩ_D + ∫(φ^2*κ^(-1)*(ur⋅vr))dΩ_D -∫(θ_sink*(ur⋅vr))dΩ_D 
+    
+    a7(uf,ws)   = ∫(-(μ*α/sqrt(κ))*(uf.⁺×n_Σ.⁺)*(ws.⁻×n_Σ.⁺))dΣ + 
+                  ∫((δ*μ/h_e_Σ)*(uf.⁺⋅n_Σ.⁺)*(ws.⁻⋅n_Σ.⁻))dΣ -
+                  ∫((2*μ)*((ε(uf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(ws.⁻⋅n_Σ.⁻))dΣ
+                  
+    a8(ur,ws)   = ∫((δ*μ/h_e_Σ)*(ur.⁻⋅n_Σ.⁻)*(ws.⁻⋅n_Σ.⁻))dΣ +
+                  ∫((2*μ*φ)*(ε(ur)⊙ε(ws)))dΩ_D -
+                  ∫(θ_sink*(ur⋅ws))dΩ_D 
+    
+    a9(ur,vr)   =  ∫((δ*μ/h_e_Σ)*(ur.⁻⋅n_Σ.⁻)*(vr.⁻⋅n_Σ.⁻))dΣ + 
+                   ∫((μ*α/sqrt(κ))*(ur.⁻×n_Σ.⁻)*(vr.⁻×n_Σ.⁻))dΣ + 
+                   ∫((2*μ*φ)*(ε(ur)⊙ ε(vr)))dΩ_D + ∫(φ^2*κ^(-1)*(ur⋅vr))dΩ_D -
+                   ∫(θ_sink*(ur⋅vr))dΩ_D 
+                   
     a10(ph,vr)  = ∫(-φ*(∇⋅vr)*ph)dΩ_D
     a11(uf,vr)  = ∫((δ*μ/h_e_Σ)*(uf.⁺⋅n_Σ.⁺)*(vr.⁻⋅n_Σ.⁻))dΣ - ∫((2*μ)*((ε(uf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(vr.⁻⋅n_Σ.⁻))dΣ
     a12(ur,qh)  = ∫(φ*(∇⋅ur)*qh)dΩ_D 
@@ -117,8 +134,14 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     a18(ph,ψ)   = ∫(ψ*ph)dΩ_D
     a19(φ1,qh)   = ∫(φ1*qh)dΩ_D
   
-    b1(ys,vf)   = ∫(-(μ*α/sqrt(κ))*(ys.⁻×n_Σ.⁺)*(vf.⁺×n_Σ.⁺))dΣ + ∫((δ*μ/h_e_Σ)*(ys.⁻⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ - ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(ys.⁻⋅n_Σ.⁻))dΣ
-    b2(ys,ws)   = ∫((μ*α/sqrt(κ))*(ys.⁻×n_Σ.⁺)*(ws.⁻×n_Σ.⁺))dΣ + ∫((δ*μ/h_e_Σ)*(ys.⁻⋅n_Σ.⁻)*(ws.⁻⋅n_Σ.⁻))dΣ +  ∫((2*μ*φ)*(ε(ys)⊙ ε(ws)))dΩ_D 
+    b1(ys,vf)   = ∫(-(μ*α/sqrt(κ))*(ys.⁻×n_Σ.⁺)*(vf.⁺×n_Σ.⁺))dΣ +
+                  ∫((δ*μ/h_e_Σ)*(ys.⁻⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ - 
+                  ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(ys.⁻⋅n_Σ.⁻))dΣ
+                  
+    b2(ys,ws)   = ∫((μ*α/sqrt(κ))*(ys.⁻×n_Σ.⁺)*(ws.⁻×n_Σ.⁺))dΣ + 
+                  ∫((δ*μ/h_e_Σ)*(ys.⁻⋅n_Σ.⁻)*(ws.⁻⋅n_Σ.⁻))dΣ + 
+                  ∫((2*μ*φ)*(ε(ys)⊙ ε(ws)))dΩ_D 
+                  
     b3(ys,vr)   = ∫((δ*μ/h_e_Σ)*(ys.⁻⋅n_Σ.⁻)*(vr.⁻⋅n_Σ.⁻))dΣ +  ∫((2*μ*φ)*(ε(ys)⊙ε(vr)))dΩ_D 
     b4(ys,qh)   = ∫((∇⋅ys)*qh)dΩ_D
     b5(ph,qh)   = ∫(((1-φ)^2*K^(-1))*ph*qh)dΩ_D
@@ -129,17 +152,33 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     b10(ur,ws)   = ∫((ρf*φ)*(ur⋅ws))dΩ_D
     b11(ys,ws)   = ∫((ρp)*(ys⋅ws))dΩ_D
     
-    lvf(vf)     = ∫(vf⋅FS)dΩ_S + ∫((δ*μ/h_e_Σ)*(uf_ex⋅n_Σ.⁺+ur_ex⋅n_Σ.⁻+ ys_ex⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ  - ∫((-(σS_ex⋅n_Σ.⁺)×n_Σ.⁺ -(μ*α/sqrt(κ))*(uf_ex×n_Σ.⁺)+(μ*α/sqrt(κ))*(ys_ex ×n_Σ.⁺))*(vf.⁺×n_Σ.⁺))dΣ  - ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(uf_ex⋅n_Σ.⁺+ur_ex⋅n_Σ.⁻+ ys_ex⋅n_Σ.⁻))dΣ
+    lvf(vf)     = ∫(vf⋅FS)dΩ_S + 
+                  ∫((δ*μ/h_e_Σ)*(uf_ex⋅n_Σ.⁺+ur_ex⋅n_Σ.⁻+ ys_ex⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ  - 
+                  ∫((-(σS_ex⋅n_Σ.⁺)×n_Σ.⁺ -(μ*α/sqrt(κ))*(uf_ex×n_Σ.⁺)+(μ*α/sqrt(κ))*(ys_ex ×n_Σ.⁺))*(vf.⁺×n_Σ.⁺))dΣ  - 
+                  ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(uf_ex⋅n_Σ.⁺+ur_ex⋅n_Σ.⁻+ ys_ex⋅n_Σ.⁻))dΣ
                     
-    lvr(vr)     = ∫(vr⋅F1)dΩ_D + ∫((δ*μ/h_e_Σ)*(uf_ex⋅n_Σ.⁺+ur_ex⋅n_Σ.⁻+ ys_ex⋅n_Σ.⁻)*(vr.⁻⋅n_Σ.⁻))dΣ  + ∫((-(σS_ex⋅n_Σ.⁺)⋅n_Σ.⁺ + (σP_ex⋅n_Σ.⁻)⋅n_Σ.⁻)*(vr.⁻⋅n_Σ.⁻))dΣ - ∫((-(σP_ex⋅n_Σ.⁻)×n_Σ.⁻ -(μ*α/sqrt(κ))*(ur_ex×n_Σ.⁻))*(vr.⁻×n_Σ.⁻))dΣ 
+    lvr(vr)     = ∫(vr⋅F1)dΩ_D +
+                  ∫((δ*μ/h_e_Σ)*(uf_ex⋅n_Σ.⁺+ur_ex⋅n_Σ.⁻+ ys_ex⋅n_Σ.⁻)*(vr.⁻⋅n_Σ.⁻))dΣ  + 
+                  ∫((-(σS_ex⋅n_Σ.⁺)⋅n_Σ.⁺ + (σP_ex⋅n_Σ.⁻)⋅n_Σ.⁻)*(vr.⁻⋅n_Σ.⁻))dΣ -
+                  ∫((-(σP_ex⋅n_Σ.⁻)×n_Σ.⁻ -(μ*α/sqrt(κ))*(ur_ex×n_Σ.⁻))*(vr.⁻×n_Σ.⁻))dΣ 
                     
-    lys(ws)     = ∫(F3⋅ws)dΩ_D + ∫((δ*μ/h_e_Σ)*(uf_ex⋅n_Σ.⁺+ur_ex⋅n_Σ.⁻+ ys_ex⋅n_Σ.⁻)*(ws.⁻⋅n_Σ.⁻))dΣ + ∫((-(σS_ex⋅n_Σ.⁺)×n_Σ.⁺ -(μ*α/sqrt(κ))*(uf_ex×n_Σ.⁺)+(μ*α/sqrt(κ))*(ys_ex ×n_Σ.⁺))*(ws.⁻×n_Σ.⁺))dΣ + ∫((σS_ex⋅n_Σ.⁺ + σP_ex⋅n_Σ.⁻ + σEP_ex⋅n_Σ.⁻)⋅ws.⁻)dΣ   
+    lys(ws)     = ∫(F3⋅ws)dΩ_D + 
+                  ∫((δ*μ/h_e_Σ)*(uf_ex⋅n_Σ.⁺+ur_ex⋅n_Σ.⁻+ ys_ex⋅n_Σ.⁻)*(ws.⁻⋅n_Σ.⁻))dΣ + 
+                  ∫((-(σS_ex⋅n_Σ.⁺)×n_Σ.⁺ -(μ*α/sqrt(κ))*(uf_ex×n_Σ.⁺)+(μ*α/sqrt(κ))*(ys_ex ×n_Σ.⁺))*(ws.⁻×n_Σ.⁺))dΣ + 
+                  ∫((σS_ex⋅n_Σ.⁺ + σP_ex⋅n_Σ.⁻ + σEP_ex⋅n_Σ.⁻)⋅ws.⁻)dΣ   
     
     lqf(qf)     = ∫(qf*QS)dΩ_S - ∫(qf.⁺*(uf_ex⋅n_Σ.⁺+ur_ex⋅n_Σ.⁻+ ys_ex⋅n_Σ.⁻))dΣ
     lqh(qh)     = ∫(qh*F2)dΩ_D 
     lψ(ψ)       = ∫(ψ*ph_ex)dΩ_D
     
-    lhs((uf,ur,ys,pf,ph,φ1),(vf,vr,ws,qf,qh,ψ)) = a1(uf,vf)+a2(ur,vf)+a3(pf,vf)+a4(uf,qf)+a5(ys,ws)+a6(ph,ws)+a7(uf,ws)+a8(ur,ws)+a9(ur,vr)+a10(ph,vr)+a11(uf,vr)+a12(ur,qh)+a13(pf,vr)+a14(pf,ws)+a15(ur,qf)+a16(ys,vr)+a17(ys,ws)+a18(ph,ψ)+a19(φ1,qh) + b1(ys,vf)+b2(ys,ws)+b3(ys,vr)+b4(ys,qh)+b5(ph,qh)+b6(ys,qf)+b7(uf,vf)+b8(ur,vr)+b9(ys,vr)+b10(ur,ws)+b11(ys,ws)
+    lhs((uf,ur,ys,pf,ph,φ1),(vf,vr,ws,qf,qh,ψ)) =
+               a1(uf,vf) + a2(ur,vf) + a3(pf,vf) + a4(uf,qf) + a5(ys,ws) +
+               a6(ph,ws) + a7(uf,ws) + a8(ur,ws) + a9(ur,vr) + a10(ph,vr) +
+               a11(uf,vr) + a12(ur,qh) + a13(pf,vr) + a14(pf,ws) + a15(ur,qf) +
+               a16(ys,vr) + a17(ys,ws) + a18(ph,ψ) + a19(φ1,qh) +
+               b1(ys,vf) + b2(ys,ws) + b3(ys,vr) + b4(ys,qh) + b5(ph,qh) +
+               b6(ys,qf) + b7(uf,vf) + b8(ur,vr) + b9(ys,vr) + b10(ur,ws) + b11(ys,ws)
+
     
     rhs((vf,vr,ws,qf,qh,ψ)) = lvf(vf) + lvr(vr) + lys(ws) + lqf(qf) +lqh(qh) + lψ(ψ) 
     
