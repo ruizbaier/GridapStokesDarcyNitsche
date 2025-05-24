@@ -283,7 +283,7 @@ module StokesDarcyNitscheAccuracyTestsTHRT
         model=generate_model_unit_square_biot_stokes(nk;simplexify_model=true,bcs_type=:full_dirichlet)
         push!(hh,1/2^nk)
         h = 1/2^nk
-        Δt = 0.001*h^2
+        Δt = 1e-6
 
         error_uf,error_ur,error_ys,error_us,error_pf,error_ph,ndofs = solve_stokes_darcy_TH_RT(model,Δt; generate_output=true)
         push!(nn,ndofs)
