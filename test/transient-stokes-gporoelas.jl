@@ -9,32 +9,30 @@ module StokesDarcyNitscheAccuracyTestsTHRT
   b::Gridap.CellData.SkeletonPair{<:Gridap.CellData.CellField}) = Operation(cross)(a,b)
   
   Id  = TensorValue(1,0,0,1)
-  const μ   = 10
-  const α   = 1.0
+  const μ   = 10.0
+  const α   = 0.1
   const κ   = 1.0
-  const δ   = 40
-  const μP  = 10
-  const λP  = 10
+  const δ   = 50
+  const μP  = 10.0
+  const λP  = 10.0
   const K   = 1.0
   const φ   = 0.1
   const ρf  = 1.0
   const ρp  = 1.0
   const θ_sink = 0
   
-  # manufactured solutions 
-  uf_ex(t)  = x -> VectorValue(t*sin(pi*x[1])*sin(pi*x[1])*sin(pi*x[2])*cos(pi*x[2]),-t*sin(pi*x[2])*sin(pi*x[2])*sin(pi*x[1])*cos(pi*x[1]))
-  pf_ex(t)  = x -> t*t*sin(pi*x[1])*sin(pi*x[2])
-  ur_ex(t)  = x -> VectorValue(t*t*sin(π*x[2])*sin(π*x[2])-t*x[1]*x[1]*x[1]*cos(π*x[2]),t*t*sin(π*x[2])*sin(π*x[2])+2*t*x[1]*x[1]*x[1]*sin(π*x[2]))
-  ph_ex(t)  = x -> t*t*(1-sin(π*x[1])*sin(π*x[2]))
-  ys_ex(t)  = x -> VectorValue(0.5*t*t*x[1]*x[1]*x[1]*cos(π*x[2]),-t*t*x[1]*x[1]*x[1]*sin(π*x[2]))
-  us_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(π*x[2]))
-  
-  duf_ex(t)  = x -> VectorValue(sin(pi*x[1])*sin(pi*x[1])*sin(pi*x[2])*cos(pi*x[2]), -sin(pi*x[2])*sin(pi*x[2])*sin(pi*x[1])*cos(pi*x[1]))
-  dur_ex(t)  = x -> VectorValue(2*t*sin(π*x[2])*sin(π*x[2])-x[1]*x[1]*x[1]*cos(π*x[2]),2*t*sin(π*x[2])*sin(π*x[2])+2*x[1]*x[1]*x[1]*sin(π*x[2]))
-  dys_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(π*x[2]))
-  dph_ex(t)  = x -> 2*t*(1-sin(π*x[1])*sin(π*x[2]))
-  dus_ex(t)  = x -> VectorValue(x[1]*x[1]*x[1]*cos(π*x[2]),-2*x[1]*x[1]*x[1]*sin(π*x[2]))
+  uf_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
+  pf_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2]))
+  ur_ex(t)  = x -> VectorValue(t*t*sin(4*π*x[2])*sin(4*π*x[2])-t*x[1]*x[1]*x[1]*cos(4*π*x[2]),t*t*sin(4*π*x[2])*sin(4*π*x[2])+2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
+  ph_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2]))
+  ys_ex(t)  = x -> VectorValue(0.5*t*t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-t*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
+  us_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
  
+  duf_ex(t)  = x -> VectorValue(x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*x[1]*x[1]*x[1]*sin(4*π*x[2]))
+  dur_ex(t)  = x -> VectorValue(2*t*sin(4*π*x[2])*sin(4*π*x[2])-x[1]*x[1]*x[1]*cos(4*π*x[2]),2*t*sin(4*π*x[2])*sin(4*π*x[2])+2*x[1]*x[1]*x[1]*sin(4*π*x[2]))
+  dys_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
+  dph_ex(t)  = x -> 2*t*(1-sin(4*π*x[1])*sin(4*π*x[2]))
+  dus_ex(t)  = x -> VectorValue(x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*x[1]*x[1]*x[1]*sin(4*π*x[2]))
 
   function solve_stokes_darcy_TH_RT(model,Δt; generate_output=false)
 
@@ -78,12 +76,12 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     n_Σ  = get_normal_vector(Σ)
     
     # Numerical integration
-    degree = 2*order
+    degree = 5*order
     dΩ = Measure(Ω,degree)
     dΩ_S = Measure(Ω_S,degree)
     dΩ_D = Measure(Ω_D,degree)
     
-    idegree = 2*order
+    idegree = 5*order
     dΣ = Measure(Σ, idegree)
     h_e_Σ = CellField(get_array(∫(1)dΣ),Σ)
     
@@ -181,7 +179,7 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     lys(t,ws)     = ∫(F3(t)⋅ws)dΩ_D +
                     ∫((δ*μ/h_e_Σ)*(uf_ex(t)⋅n_Σ.⁺+ur_ex(t)⋅n_Σ.⁻+ dys_ex(t)⋅n_Σ.⁻)*(ws.⁻⋅n_Σ.⁻))dΣ +
                     ∫((-(σS_ex(t)⋅n_Σ.⁺)×n_Σ.⁺ -(μ*α/sqrt(κ))*(uf_ex(t)×n_Σ.⁺)+(μ*α/sqrt(κ))*(dys_ex(t) ×n_Σ.⁺))*(ws.⁻×n_Σ.⁺))dΣ +
-                    ∫((σS_ex(t)⋅n_Σ.⁺ + σP_ex(t)⋅n_Σ.⁻ + σEP_ex(t)⋅n_Σ.⁻)⋅ws.⁻)dΣ      
+                    ∫((σS_ex(t)⋅n_Σ.⁺ + σP_ex(t)⋅n_Σ.⁻ + σEP_ex(t)⋅n_Σ.⁻)⋅ws.⁻)dΣ    
                     
     lqf(t,qf)     = ∫(qf*QS(t))dΩ_S - ∫(qf.⁺*(uf_ex(t)⋅n_Σ.⁺+ur_ex(t)⋅n_Σ.⁻+ dys_ex(t)⋅n_Σ.⁻))dΣ
     lqh(t,qh)     = ∫(qh*F2(t))dΩ_D 
@@ -284,7 +282,8 @@ module StokesDarcyNitscheAccuracyTestsTHRT
         println("******** Refinement step: $nk")
         model=generate_model_unit_square_biot_stokes(nk;simplexify_model=true,bcs_type=:full_dirichlet)
         push!(hh,1/2^nk)
-        Δt = 1e-5
+        h = 1/2^nk
+        Δt = 0.001*h^2
 
         error_uf,error_ur,error_ys,error_us,error_pf,error_ph,ndofs = solve_stokes_darcy_TH_RT(model,Δt; generate_output=true)
         push!(nn,ndofs)
@@ -313,10 +312,5 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     end
     println("=====================================================================================================================================")
   end
-  convergence_test(6)
+  convergence_test(4)
 end
-
-
-
-
-
