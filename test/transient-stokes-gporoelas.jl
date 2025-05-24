@@ -76,12 +76,12 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     n_Σ  = get_normal_vector(Σ)
     
     # Numerical integration
-    degree = 5*order
+    degree = 3*order
     dΩ = Measure(Ω,degree)
     dΩ_S = Measure(Ω_S,degree)
     dΩ_D = Measure(Ω_D,degree)
     
-    idegree = 5*order
+    idegree = 3*order
     dΣ = Measure(Σ, idegree)
     h_e_Σ = CellField(get_array(∫(1)dΣ),Σ)
     
