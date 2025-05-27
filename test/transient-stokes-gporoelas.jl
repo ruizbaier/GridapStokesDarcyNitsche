@@ -10,9 +10,9 @@ module StokesDarcyNitscheAccuracyTestsTHRT
   
   Id  = TensorValue(1,0,0,1)
   const μ   = 10.0
-  const α   = 0.1
+  const α   = 1.0
   const κ   = 1.0
-  const δ   = 50
+  const δ   = 40
   const μP  = 10.0
   const λP  = 10.0
   const K   = 1.0
@@ -22,16 +22,16 @@ module StokesDarcyNitscheAccuracyTestsTHRT
   const θ_sink = 0
   
   uf_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
-  pf_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2]))
+  pf_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2])) -t*t
   ur_ex(t)  = x -> VectorValue(t*t*sin(4*π*x[2])*sin(4*π*x[2])-t*x[1]*x[1]*x[1]*cos(4*π*x[2]),t*t*sin(4*π*x[2])*sin(4*π*x[2])+2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
-  ph_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2]))
+  ph_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2])) 
   ys_ex(t)  = x -> VectorValue(0.5*t*t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-t*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
   us_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
  
   duf_ex(t)  = x -> VectorValue(x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*x[1]*x[1]*x[1]*sin(4*π*x[2]))
   dur_ex(t)  = x -> VectorValue(2*t*sin(4*π*x[2])*sin(4*π*x[2])-x[1]*x[1]*x[1]*cos(4*π*x[2]),2*t*sin(4*π*x[2])*sin(4*π*x[2])+2*x[1]*x[1]*x[1]*sin(4*π*x[2]))
   dys_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
-  dph_ex(t)  = x -> 2*t*(1-sin(4*π*x[1])*sin(4*π*x[2]))
+  dph_ex(t)  = x -> 2*t*(1-sin(4*π*x[1])*sin(4*π*x[2])) -2*t
   dus_ex(t)  = x -> VectorValue(x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*x[1]*x[1]*x[1]*sin(4*π*x[2]))
 
   function solve_stokes_darcy_TH_RT(model,Δt; generate_output=false)
@@ -49,7 +49,7 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     F1(t)     = x -> ρf*φ*dur_ex(t)(x)+ρf*φ*dus_ex(t)(x)-(∇⋅σP_ex(t))(x)+φ^2*κ^(-1)*ur_ex(t)(x)-θ_sink*(ur_ex(t)(x)+us_ex(t)(x))
     F2(t)     = x -> (1-φ)^2*K^(-1)*dph_ex(t)(x)+(∇⋅dys_ex(t))(x)+φ*(∇⋅ur_ex(t))(x)
     F3(t)     = x -> ρf*φ*dur_ex(t)(x)+ρp*dus_ex(t)(x) -(∇⋅σP_ex(t))(x) -(∇⋅σEP_ex(t))(x)-θ_sink*(ur_ex(t)(x)+us_ex(t)(x))
-    F4(t)     = x -> ρp*us_ex(t)(x)-ρp*dys_ex(t)(x)
+    F4(t)     = x -> ρp*dys_ex(t)(x)-ρp*us_ex(t)(x)
     
     # Reference FEs
     order = 2 
@@ -65,6 +65,7 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     Ω_D = Interior(model,tags="porous")
 
     # Boundary triangulations and outer unit normals
+    
     Γ_S = BoundaryTriangulation(model,tags="wallED")
     n_ΓS = get_normal_vector(Γ_S)
     
@@ -76,12 +77,12 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     n_Σ  = get_normal_vector(Σ)
     
     # Numerical integration
-    degree = 3*order
+    degree = 2*order
     dΩ = Measure(Ω,degree)
     dΩ_S = Measure(Ω_S,degree)
     dΩ_D = Measure(Ω_D,degree)
     
-    idegree = 3*order
+    idegree = 2*order
     dΣ = Measure(Σ, idegree)
     h_e_Σ = CellField(get_array(∫(1)dΣ),Σ)
     
@@ -93,9 +94,6 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     Qf = TestFESpace(Ω_S, reffe_pf , conformity=:C0)
     Qh = TestFESpace(Ω_D, reffe_ph, conformity=:C0)
 
-    L_= ConstantFESpace(Ω)
-    L = TrialFESpace(L_) 
-
     Uf = TransientTrialFESpace(Vf,[uf_ex])
     Ur = TransientTrialFESpace(Vr,[ur_ex])
     Us = TransientTrialFESpace(Vs,[ys_ex])
@@ -103,8 +101,8 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     Pf = TransientTrialFESpace(Qf)
     Ph = TransientTrialFESpace(Qh)
     
-    Y = MultiFieldFESpace([Vf,Vr,Vs,Ws,Qf,Qh,L_])
-    X = MultiFieldFESpace([Uf,Ur,Us,Ys,Pf,Ph,L])
+    Y = MultiFieldFESpace([Vf,Vr,Vs,Ws,Qf,Qh])
+    X = MultiFieldFESpace([Uf,Ur,Us,Ys,Pf,Ph])
     
     # terms without time derivative
     a1(t,uf,vf)   = ∫((2*μ)*(ε(uf)⊙ε(vf)))dΩ_S + 
@@ -117,7 +115,7 @@ module StokesDarcyNitscheAccuracyTestsTHRT
                     ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(ur.⁻⋅n_Σ.⁻))dΣ
                     
     a3(t,pf,vf)   = ∫(-(∇⋅vf)*pf)dΩ_S + ∫(pf.⁺*(vf.⁺⋅n_Σ.⁺))dΣ 
-    a4(t,uf,qf)   = ∫((∇⋅uf)*qf)dΩ_S - ∫(qf.⁺*(uf.⁺⋅n_Σ.⁺))dΣ 
+    a4(t,uf,qf)   = ∫((∇⋅uf)*qf)dΩ_S + ∫(qf.⁺*(uf.⁺⋅n_Σ.⁺))dΣ 
     a5(t,ys,ws)   = ∫((2*μP)*(ε(ys)⊙ε(ws)))dΩ_D + ∫(λP*(∇⋅ys)*(∇⋅ws))dΩ_D
     a6(t,ph,ws)   = ∫(-(∇⋅ws)*ph)dΩ_D 
     
@@ -140,12 +138,10 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     a12(t,ur,qh)  = ∫(φ*(∇⋅ur)*qh)dΩ_D 
     a13(t,pf,vr)  = ∫(pf.⁺*(vr.⁻⋅n_Σ.⁻))dΣ 
     a14(t,pf,ws)  = ∫(pf.⁺*(ws.⁻⋅n_Σ.⁻))dΣ
-    a15(t,ur,qf)  = ∫(-qf.⁺*(ur.⁻⋅n_Σ.⁻))dΣ 
+    a15(t,ur,qf)  = ∫(qf.⁺*(ur.⁻⋅n_Σ.⁻))dΣ 
     a16(t,us,vr)  = ∫(-θ_sink*(us⋅vr))dΩ_D 
     a17(t,us,ws)  = ∫(-θ_sink*(us⋅ws))dΩ_D 
-    a18(t,us,vs)  = ∫(ρp*(us⋅vs))dΩ_D  
-    a19(t,ph,ψ)   = ∫(ψ*ph)dΩ_D
-    a20(t,φ1,qh)   = ∫(φ1*qh)dΩ_D
+    a18(t,us,vs)  = ∫(-(ρp)*(us⋅vs))dΩ_D  
   
     b1(t,dys,vf)   = ∫(-(μ*α/sqrt(κ))*(dys.⁻×n_Σ.⁺)*(vf.⁺×n_Σ.⁺))dΣ + 
                      ∫((δ*μ/h_e_Σ)*(dys.⁻⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ -
@@ -158,13 +154,13 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     b3(t,dys,vr)   = ∫((δ*μ/h_e_Σ)*(dys.⁻⋅n_Σ.⁻)*(vr.⁻⋅n_Σ.⁻))dΣ +  ∫((2*μ*φ)*(ε(dys)⊙ε(vr)))dΩ_D 
     b4(t,dys,qh)   = ∫((∇⋅dys)*qh)dΩ_D
     b5(t,dph,qh)   = ∫(((1-φ)^2*K^(-1))*dph*qh)dΩ_D
-    b6(t,dys,qf)   = ∫(-qf.⁺*(dys.⁻⋅n_Σ.⁻))dΣ
+    b6(t,dys,qf)   = ∫(qf.⁺*(dys.⁻⋅n_Σ.⁻))dΣ
     b7(t,duf,vf)   = ∫(ρf*(duf⋅vf))dΩ_S
     b8(t,dur,vr)   = ∫((ρf*φ)*(dur⋅vr))dΩ_D
     b9(t,dus,vr)   = ∫((ρf*φ)*(dus⋅vr))dΩ_D
-    b10(t,dur,ws)   = ∫((ρf*φ)*(dur⋅ws))dΩ_D
-    b11(t,dus,ws)   = ∫((ρp)*(dus⋅ws))dΩ_D
-    b12(t,dys,vs)   = ∫(-(ρp)*(dys⋅vs))dΩ_D
+    b10(t,dur,ws)  = ∫((ρf*φ)*(dur⋅ws))dΩ_D
+    b11(t,dus,ws)  = ∫((ρp)*(dus⋅ws))dΩ_D
+    b12(t,dys,vs)  = ∫(ρp*(dys⋅vs))dΩ_D
     
     lvf(t,vf)     = ∫(vf⋅FS(t))dΩ_S +  
                     ∫((δ*μ/h_e_Σ)*(uf_ex(t)⋅n_Σ.⁺+ur_ex(t)⋅n_Σ.⁻+ dys_ex(t)⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ  -
@@ -181,32 +177,31 @@ module StokesDarcyNitscheAccuracyTestsTHRT
                     ∫((-(σS_ex(t)⋅n_Σ.⁺)×n_Σ.⁺ -(μ*α/sqrt(κ))*(uf_ex(t)×n_Σ.⁺)+(μ*α/sqrt(κ))*(dys_ex(t) ×n_Σ.⁺))*(ws.⁻×n_Σ.⁺))dΣ +
                     ∫((σS_ex(t)⋅n_Σ.⁺ + σP_ex(t)⋅n_Σ.⁻ + σEP_ex(t)⋅n_Σ.⁻)⋅ws.⁻)dΣ    
                     
-    lqf(t,qf)     = ∫(qf*QS(t))dΩ_S - ∫(qf.⁺*(uf_ex(t)⋅n_Σ.⁺+ur_ex(t)⋅n_Σ.⁻+ dys_ex(t)⋅n_Σ.⁻))dΣ
+    lqf(t,qf)     = ∫(qf*QS(t))dΩ_S + ∫(qf.⁺*(uf_ex(t)⋅n_Σ.⁺+ur_ex(t)⋅n_Σ.⁻+ dys_ex(t)⋅n_Σ.⁻))dΣ
     lqh(t,qh)     = ∫(qh*F2(t))dΩ_D 
     lvs(t,vs)     = ∫(vs⋅F4(t))dΩ_D
-    lψ(t,ψ)       = ∫(ψ*ph_ex(t))dΩ_D
     
-    lhs(t,(uf,ur,ys,us,pf,ph,φ1),(vf,vr,ws,vs,qf,qh,ψ)) = 
+    lhs(t,(uf,ur,ys,us,pf,ph),(vf,vr,ws,vs,qf,qh)) = 
                                      a1(t,uf,vf)+a2(t,ur,vf)+a3(t,pf,vf)+a4(t,uf,qf)+a5(t,ys,ws)+
                                      a6(t,ph,ws)+a7(t,uf,ws)+a8(t,ur,ws)+a9(t,ur,vr)+a10(t,ph,vr)+
                                      a11(t,uf,vr)+a12(t,ur,qh)+a13(t,pf,vr)+a14(t,pf,ws)+a15(t,ur,qf)+
-                                     a16(t,us,vr)+a17(t,us,ws)+a18(t,us,vs)+a19(t,ph,ψ)+a20(t,φ1,qh)
+                                     a16(t,us,vr)+a17(t,us,ws)+a18(t,us,vs)
     
-    mass(t,(duf,dur,dys,dus,pf,dph,φ1),(vf,vr,ws,vs,qf,qh,ψ)) = 
+    mass(t,(duf,dur,dys,dus,pf,dph),(vf,vr,ws,vs,qf,qh)) = 
                                      b1(t,dys,vf)+b2(t,dys,ws)+b3(t,dys,vr)+b4(t,dys,qh)+b5(t,dph,qh)+
                                      b6(t,dys,qf)+b7(t,duf,vf)+b8(t,dur,vr)+b9(t,dus,vr)+b10(t,dur,ws)+
                                      b11(t,dus,ws)+b12(t,dys,vs)  
     
-    rhs(t,(vf,vr,ws,vs,qf,qh,ψ)) = lvf(t,vf) + lvr(t,vr) + lys(t,ws) + lvs(t,vs) + lqf(t,qf) +lqh(t,qh) + lψ(t,ψ) 
+    rhs(t,(vf,vr,ws,vs,qf,qh)) = lvf(t,vf) + lvr(t,vr) + lys(t,ws) + lvs(t,vs) + lqf(t,qf) +lqh(t,qh) 
     
     op = TransientLinearFEOperator((lhs,mass),rhs,X,Y)
     
     ls = LUSolver()
     θ = 1
     solver = ThetaMethod(ls, Δt, θ)
-    t0, tF = 0.0, 0.01
+    t0, tF = 0.0, 0.001
     
-    xh0 = interpolate_everywhere([uf_ex(t0),ur_ex(t0),ys_ex(t0),us_ex(t0),pf_ex(t0),ph_ex(t0),1.0],X(t0))
+    xh0 = interpolate_everywhere([uf_ex(t0),ur_ex(t0),ys_ex(t0),us_ex(t0),pf_ex(t0),ph_ex(t0)],X(t0))
     fesltn = solve(solver, op, t0, tF, xh0)
     
     el2uf_accum  = 0.0
@@ -283,7 +278,7 @@ module StokesDarcyNitscheAccuracyTestsTHRT
         model=generate_model_unit_square_biot_stokes(nk;simplexify_model=true,bcs_type=:full_dirichlet)
         push!(hh,1/2^nk)
         h = 1/2^nk
-        Δt = 1e-6
+        Δt = 0.001*h^2
 
         error_uf,error_ur,error_ys,error_us,error_pf,error_ph,ndofs = solve_stokes_darcy_TH_RT(model,Δt; generate_output=true)
         push!(nn,ndofs)
@@ -307,10 +302,10 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     println("====================================================================================================================================")
     println("   DoF  &    h   &   e(uf)  & r(uf) &   e(ur)  & r(ur) &   e(pf)  & r(pf) &   e(ph)  & r(ph) &   e(ys)  & r(ys)  &   e(us)  & r(us) ")
     println("====================================================================================================================================")
-    for nk in 1:nkmax
+    for nk in 2:nkmax
         @printf("%7d & %.4f & %.2e & %.3f & %.2e & %.3f & %.2e & %.3f & %.2e & %.3f & %.2e & %.3f & %.2e & %.3f  \n", nn[nk], hh[nk], euf[nk], ruf[nk], eur[nk], rur[nk], epf[nk], rpf[nk], eph[nk], rph[nk],eys[nk], rys[nk],eus[nk], rus[nk]);
     end
     println("=====================================================================================================================================")
   end
-  convergence_test(4)
+  convergence_test(5)
 end
