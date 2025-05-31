@@ -22,9 +22,9 @@ module StokesDarcyNitscheAccuracyTestsTHRT
   const θ_sink = 0
   
   uf_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
-  pf_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2])) -t*t
+  pf_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2])) 
   ur_ex(t)  = x -> VectorValue(t*t*sin(4*π*x[2])*sin(4*π*x[2])-t*x[1]*x[1]*x[1]*cos(4*π*x[2]),t*t*sin(4*π*x[2])*sin(4*π*x[2])+2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
-  ph_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2])) 
+  ph_ex(t)  = x -> t*t*(1-sin(4*π*x[1])*sin(4*π*x[2])) -t*t
   ys_ex(t)  = x -> VectorValue(0.5*t*t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-t*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
   us_ex(t)  = x -> VectorValue(t*x[1]*x[1]*x[1]*cos(4*π*x[2]),-2*t*x[1]*x[1]*x[1]*sin(4*π*x[2]))
  
@@ -92,7 +92,7 @@ module StokesDarcyNitscheAccuracyTestsTHRT
     Vs  = TestFESpace(Ω_D, reffe_ys, conformity=:H1, dirichlet_tags = ["wallPD"])
     Ws = TestFESpace(Ω_D, reffe_us, conformity=:C0)
     Qf = TestFESpace(Ω_S, reffe_pf , conformity=:C0)
-    Qh = TestFESpace(Ω_D, reffe_ph, conformity=:C0)
+    Qh = TestFESpace(Ω_D, reffe_ph, conformity=:C0,constraint=:zeromean)
 
     Uf = TransientTrialFESpace(Vf,[uf_ex])
     Ur = TransientTrialFESpace(Vr,[ur_ex])
@@ -278,7 +278,7 @@ module StokesDarcyNitscheAccuracyTestsTHRT
         model=generate_model_unit_square_biot_stokes(nk;simplexify_model=true,bcs_type=:full_dirichlet)
         push!(hh,1/2^nk)
         h = 1/2^nk
-        Δt = 0.001*h^2
+        Δt = 0.001*h
 
         error_uf,error_ur,error_ys,error_us,error_pf,error_ph,ndofs = solve_stokes_darcy_TH_RT(model,Δt; generate_output=true)
         push!(nn,ndofs)
