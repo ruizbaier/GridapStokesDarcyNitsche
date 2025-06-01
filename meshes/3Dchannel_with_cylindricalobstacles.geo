@@ -607,7 +607,7 @@ Physical Surface("Outlet") = { 4009, 4013 }; // side‐face extruded from Line(1
 Physical Surface("LateralWalls") = { 4001, 4002, 4004, 4005, 4006, 4007, 4008, 4010, 4011, 4012, 4014, 4015, 4016 };
 
 // 7.3 All 10 cylindrical side‐walls (fluid/obstacle interfaces)
-Physical Surface("Interface") = {
+Physical Surface("Interf") = {
     4017, 4018, 4019, 4020,   // obstacle 1 side‐walls
     4021, 4022, 4023, 4024,   // obstacle 2 side‐walls
     4025, 4026, 4027, 4028,   // obstacle 3 side‐walls
@@ -653,7 +653,7 @@ Physical Point("LateralWalls") = {
 };
 
 // 8.4 Interface (all cylindrical side‐wall points, bottom and top circle‐arc endpoints)
-Physical Point("Interface") = {
+Physical Point("Interf") = {
   // bottom arcs:
   101, 102, 103, 104, 106, 107, 108, 109,
   111, 112, 113, 114, 116, 117, 118, 119,
