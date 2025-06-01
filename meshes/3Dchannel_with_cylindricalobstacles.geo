@@ -8,11 +8,11 @@
 z0 = 0.8;
 
 // small mesh size around obstacles
-lc_obst = 0.3;
+lc_obst = 0.4;
 
 // Global mesh controls
 Mesh.ScalingFactor              = 1.0;
-Mesh.CharacteristicLengthFactor = 0.2;    // smaller → finer mesh globally
+Mesh.CharacteristicLengthFactor = 0.8;    // smaller → finer mesh globally
 Mesh.ColorCarousel              = 0;
 
 // -----------------------------------------------------------------------------
