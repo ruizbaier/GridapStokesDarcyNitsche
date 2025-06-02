@@ -10,29 +10,25 @@ using Printf
 Id  = TensorValue(1,0,0,0,1,0,0,0,1)
 
 # All lengths in cm, masses in g, time in s (cgs units)
-const μ     = 0.035     
-const ρf    = 1.06      
+const μ     = 0.01 
+const ρf    = 1.0     
 const α     = 1.0       
 const δ     = 10.0      
-const κ     = 1e-9       
+const κ     = 1e-3      
 const φ     = 0.30    
-const λP    = 5.76e4  
-const μP    = 3.85e4      
-const K     = 8.33e4      
-const ρs    = 1.19       
-const ρp    = ρf*φ + ρs*(1 - φ)   
+const λP    = 4.9364e4 
+const μP    = 1.0336e3
+const K     = 0.49e3         
+const ρp    = 1.2
 const θ_sink = 0.0
 
-
-const W = 2 
-const H = 0.8
-uin(t) = x -> VectorValue(3 * exp(t) * (1.0 - (x[2]/(W/2))^2 - (x[3]/(H/2))^2), 0.0, 0.0)
+uin(t) = x -> VectorValue(20*(x[2]-0.5)*(1.5-x[2])*x[3]*(0.8-x[3])/0.64, 0.0, 0.0)
 
 ap = 0
 ff = VectorValue(0.0,0.0,0.0)
 vzero(t) = x -> VectorValue(0.0,0.0,0.0)
 szero(t) = x -> 0.0
-model = GmshDiscreteModel("meshes/3Dchannel_with_cylindricalobstacles.msh")
+model = GmshDiscreteModel("meshes/mesh3d.msh")
 
 labels = get_face_labeling(model)
 
@@ -109,7 +105,8 @@ a2(t,ur,vf)   = ∫((δ*μ/h_e_Σ)*(ur.⁻⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ -
             
 a3(t,pf,vf)   = ∫(-(∇⋅vf)*pf)dΩ_S + ∫(pf.⁺*(vf.⁺⋅n_Σ.⁺))dΣ 
 a4(t,uf,qf)   = ∫((∇⋅uf)*qf)dΩ_S - ∫(qf.⁺*(uf.⁺⋅n_Σ.⁺))dΣ 
-a5(t,ys,ws)   = ∫((2*μP)*(ε(ys)⊙ε(ws)))dΩ_D + ∫(λP*(∇⋅ys)*(∇⋅ws))dΩ_D
+a5(t,ys,ws)   = ∫((2*μP)*(ε(ys)⊙ε(ws)))dΩ_D + ∫(λP*(∇⋅ys)*(∇⋅ws))dΩ_D 
+
 a6(t,ph,ws)   = ∫(-(∇⋅ws)*ph)dΩ_D 
 
 a7(t,uf,ws)   = ∫(-(μ*α/sqrt(κ))*((uf.⁺×n_Σ.⁺)⋅(ws.⁻×n_Σ.⁺)))dΣ +
@@ -135,7 +132,7 @@ a15(t,ur,qf)  = ∫(-qf.⁺*(ur.⁻⋅n_Σ.⁻))dΣ
 a16(t,us,vr)  = ∫(-θ_sink*(us⋅vr))dΩ_D 
 a17(t,us,ws)  = ∫(-θ_sink*(us⋅ws))dΩ_D 
 a18(t,us,vs)  = ∫(-(ρp)*(us⋅vs))dΩ_D  
-
+              
 b1(t,dys,vf)   = ∫(-(μ*α/sqrt(κ))*((dys.⁻×n_Σ.⁺)⋅(vf.⁺×n_Σ.⁺)))dΣ + 
                  ∫((δ*μ/h_e_Σ)*(dys.⁻⋅n_Σ.⁻)*(vf.⁺⋅n_Σ.⁺))dΣ -
                  ∫((2*μ)*((ε(vf).⁺⋅n_Σ.⁺)⋅n_Σ.⁺)*(dys.⁻⋅n_Σ.⁻))dΣ
@@ -179,6 +176,7 @@ rhs(t,(vf,vr,ws,vs,qf,qh)) = lvf(t,vf) + lvr(t,vr) + lys(t,ws) + lvs(t,vs) + lqf
 op = TransientLinearFEOperator((lhs,mass),rhs,X,Y)
 
 ls = LUSolver()
+
 θ = 1.0
 Δt = 1e-3
 solver = ThetaMethod(ls, Δt, θ)
