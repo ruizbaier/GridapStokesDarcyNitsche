@@ -7,7 +7,7 @@ using Printf
 (Gridap.CellData.cross)(a::Gridap.CellData.CellField,
   b::Gridap.CellData.SkeletonPair{<:Gridap.CellData.CellField}) = Operation(cross)(a,b)
 
-Id  = TensorValue(1,0,0,1)
+Id  = TensorValue(1,0,0,0,1,0,0,0,1)
 
 # All lengths in cm, masses in g, time in s (cgs units)
 const μ     = 0.035     
