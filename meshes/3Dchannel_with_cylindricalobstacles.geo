@@ -621,10 +621,10 @@ Physical Surface("Interf") = {
 };
 
 // 7.4 Cylinder tops (at z = z₀)
-Physical Surface("CylinderTops") = { 102, 103, 104, 105, 106, 107, 108, 109, 110, 111 };
+Physical Surface("CylinderTop") = { 102, 103, 104, 105, 106, 107, 108, 109, 110, 111 };
 
 // 7.5 Cylinder bottoms (at z = 0)
-Physical Surface("CylinderBottoms") = { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+Physical Surface("CylinderBottom") = { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 
 // 7.6 Channel top (ceiling) without holes
 Physical Surface("ChannelTop") = { 101 };
@@ -669,13 +669,13 @@ Physical Point("Interf") = {
 };
 
 // 8.5 CylinderTops (centers of each obstacle at z=z₀)
-Physical Point("CylinderTops") = {
+Physical Point("CylinderTop") = {
   1100, 1105, 1110, 1115, 1120,
   1125, 1130, 1135, 1140, 1145
 };
 
 // 8.6 CylinderBottoms (centers of each obstacle at z=0)
-Physical Point("CylinderBottoms") = {
+Physical Point("CylinderBottom") = {
   100, 105, 110, 115, 120, 125, 130, 135, 140, 145
 };
 
