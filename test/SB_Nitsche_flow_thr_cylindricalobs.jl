@@ -27,7 +27,7 @@ uin(t) = x -> VectorValue(20*(x[2]-0.5)*(1.5-x[2])*x[3]*(0.8-x[3])/0.64, 0.0, 0.
 ap = 0
 ff = VectorValue(0.0,0.0,0.0)
 vzero(t) = x -> VectorValue(0.0,0.0,0.0)
-szero(t) = x -> 0.0
+
 model = GmshDiscreteModel("meshes/mesh3d.msh")
 
 labels = get_face_labeling(model)
@@ -79,14 +79,14 @@ Vf  = TestFESpace(Ω_S, reffe_uf, conformity=:H1, dirichlet_tags=["FluidIn","Flu
 Vr  = TestFESpace(Ω_D, reffe_ur, conformity=:H1, dirichlet_tags=["CylinderT","CylinderB"])
 Vs  = TestFESpace(Ω_D, reffe_ys, conformity=:H1, dirichlet_tags=["CylinderT","CylinderB"])
 Ws = TestFESpace(Ω_D, reffe_us, conformity=:C0)
-Qf = TestFESpace(Ω_S, reffe_pf, conformity=:C0,dirichlet_tags = ["FluidOut"])
-Qh = TestFESpace(Ω_D, reffe_ph, conformity=:C0,constraint=:zeromean)
+Qf = TestFESpace(Ω_S, reffe_pf, conformity=:C0)
+Qh = TestFESpace(Ω_D, reffe_ph, conformity=:C0)
 
 Uf = TransientTrialFESpace(Vf,[uin,vzero,vzero,vzero])
 Ur = TransientTrialFESpace(Vr,[vzero,vzero])
 Us = TransientTrialFESpace(Vs,[vzero,vzero])
 Ys = TransientTrialFESpace(Ws)
-Pf = TransientTrialFESpace(Qf,[szero])
+Pf = TransientTrialFESpace(Qf)
 Ph = TransientTrialFESpace(Qh)
 
 Y = MultiFieldFESpace([Vf,Vr,Vs,Ws,Qf,Qh])
