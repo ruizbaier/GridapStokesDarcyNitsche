@@ -28,7 +28,7 @@ ap = 0
 ff = VectorValue(0.0,0.0,0.0)
 vzero(t) = x -> VectorValue(0.0,0.0,0.0)
 
-model = GmshDiscreteModel("meshes/mesh3d.msh")
+model = GmshDiscreteModel("meshes/3Dchannel_with_cylindricalobstacles.msh")
 
 labels = get_face_labeling(model)
 
