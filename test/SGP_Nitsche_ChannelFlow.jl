@@ -20,7 +20,7 @@ const ρf  = 1.0
 const ρp  = 1.0
 const θ_sink = 0
 
-uin(t) = x -> VectorValue(0.01*tanh(40*(x[2]+0.2)*(1-x[2])), 0)
+uin(t) = x -> VectorValue(0.01*tanh(40*(x[2]+0.2)*(1.2-x[2])),0)
 
 
 ap = 0
